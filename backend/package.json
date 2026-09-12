@@ -1,0 +1,16 @@
+{
+  "name": "ledgerhand-backend",
+  "version": "1.0.0",
+  "description": "Escrow + reputation microservice for A2A agent transactions on SharedOS",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test/store.test.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  },
+  "optionalDependencies": {
+    "better-sqlite3": "^11.8.1"
+  }
+}
