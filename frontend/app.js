@@ -406,14 +406,18 @@ async function viewTaskLogs(taskId) {
     $("#task-logs-body").textContent = (task.logs || [])
       .map((l) => `[${(l.at || "").split("T")[1]?.slice(0, 8)}] [${l.level}] ${l.message}`)
       .join("\n") || "No logs recorded.";
-    $("#task-logs-modal").hidden = false;
+    const m = $("#task-logs-modal");
+    m.hidden = false;
+    m.style.display = "flex";
   } catch (err) {
     showToast(err.message, "error");
   }
 }
 
 function closeTaskLogsModal() {
-  $("#task-logs-modal").hidden = true;
+  const m = $("#task-logs-modal");
+  m.hidden = true;
+  m.style.display = "none";
 }
 
 // --- Ledger Explorer & Reputation Leaderboard ---
@@ -487,12 +491,16 @@ $$("#escrow-filters .filter-btn").forEach((btn) => {
 // --- Register Agent Modal ---
 
 function openRegisterAgentModal() {
-  $("#register-agent-modal").hidden = false;
+  const m = $("#register-agent-modal");
+  m.hidden = false;
+  m.style.display = "flex";
   $("#register-agent-form input[name='id']")?.focus();
 }
 
 function closeRegisterAgentModal() {
-  $("#register-agent-modal").hidden = true;
+  const m = $("#register-agent-modal");
+  m.hidden = true;
+  m.style.display = "none";
 }
 
 $("#register-agent-form")?.addEventListener("submit", async (e) => {

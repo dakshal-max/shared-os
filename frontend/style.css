@@ -916,6 +916,11 @@ tbody tr:hover { background: rgba(255, 255, 255, 0.02); }
   padding: 20px;
 }
 
+.modal-backdrop[hidden],
+[hidden] {
+  display: none !important;
+}
+
 .modal-dialog {
   background: var(--ink-2);
   border: 1px solid var(--rule);
