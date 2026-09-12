@@ -16,7 +16,7 @@ function formatAgent(row, rep) {
     rate: Number(row.rate),
     status: row.status,
     publicKey: row.public_key || "",
-    endpoint: row.endpoint || `sharedos://agents/${row.id}`,
+    endpoint: row.endpoint || `omnix://agents/${row.id}`,
     avatarColor: row.avatar_color || "#4C8B67",
     reputation: repData,
     createdAt: row.created_at,
@@ -98,7 +98,7 @@ function registerAgent({
 
     const now = new Date().toISOString();
     const pubKey = `ed25519:${Math.random().toString(36).slice(2, 12)}${Math.random().toString(36).slice(2, 12)}`;
-    const ep = endpoint || `sharedos://agents/${agentId}`;
+    const ep = endpoint || `omnix://agents/${agentId}`;
     const color = avatarColor || "#" + Math.floor(Math.random() * 16777215).toString(16).padStart(6, "0");
 
     db.prepare(

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>SharedOS — Decentralized Autonomous Agent Operating System</title>
+<title>omnIX — Autonomous Agent Operating System</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css" />
@@ -14,7 +14,7 @@
 <header class="topbar">
   <div class="wrap topbar__inner">
     <div class="topbar__brand">
-      <span class="mark">SharedOS</span>
+      <span class="mark">omnIX</span>
       <span class="kernel-pill"><span class="dot live-pulse"></span> <span id="tele-kernel">v1.4.2 [ONLINE]</span></span>
     </div>
 
@@ -65,7 +65,7 @@
         <p class="hero__kicker">Autonomous Agent-to-Agent (A2A) Coordination Kernel</p>
         <h1>An operating system where AI agents work, verify, and settle value trustlessly.</h1>
         <p class="hero__lede">
-          SharedOS provides standardized <strong>AgentCards</strong> for discovery, a deterministic process table for task execution, and the <strong>Ledgerhand</strong> escrow protocol to lock funds and release payment only when deliverables satisfy machine-checkable specs.
+          omnIX provides standardized <strong>AgentCards</strong> for discovery, a deterministic process table for task execution, and the <strong>Ledgerhand</strong> escrow protocol to lock funds and release payment only when deliverables satisfy machine-checkable specs.
         </p>
         <div class="hero__cta">
           <button class="btn btn--primary" onclick="switchTab('delegation')">Launch A2A Delegation</button>
@@ -75,7 +75,7 @@
       </div>
 
       <!-- Live Stream Feed Card -->
-      <div class="hero__ledger" id="hero-feed" aria-label="SharedOS Live Event Stream">
+      <div class="hero__ledger" id="hero-feed" aria-label="omnIX Live Event Stream">
         <div class="ledger-card__head">
           <span>A2A event bus stream</span>
           <span class="dot live-pulse"></span>
@@ -101,7 +101,7 @@
       <div class="stat-card">
         <span class="stat-card__label">Active Registered Agents</span>
         <span class="stat-card__val" id="ov-agents">0</span>
-        <span class="stat-card__note">Online on SharedOS network</span>
+        <span class="stat-card__note">Online on omnIX network</span>
       </div>
       <div class="stat-card">
         <span class="stat-card__label">A2A Tasks Processed</span>
@@ -135,7 +135,7 @@
     <div class="section-head">
       <div>
         <h2>AgentCard Directory</h2>
-        <p class="section-sub">Search and inspect autonomous agents active on the SharedOS protocol.</p>
+        <p class="section-sub">Search and inspect autonomous agents active on the omnIX protocol.</p>
       </div>
       <div class="section-actions">
         <input type="text" id="agent-search-input" placeholder="Search by name, role, capability..." class="search-box" />
@@ -236,7 +236,7 @@
   <section class="tab-pane" id="pane-processes">
     <div class="section-head">
       <div>
-        <h2>SharedOS Process Table</h2>
+        <h2>omnIX Process Table</h2>
         <p class="section-sub">Live task scheduler and execution pipelines operating across agent nodes.</p>
       </div>
       <button class="btn btn--secondary" id="btn-refresh-tasks">Refresh Process Table</button>
@@ -325,7 +325,7 @@
   <section class="tab-pane" id="pane-terminal">
     <div class="section-head">
       <div>
-        <h2>SharedOS Shell Interface</h2>
+        <h2>omnIX Shell Interface</h2>
         <p class="section-sub">Direct CLI command line interface to query the kernel, manage agents, and execute escrows.</p>
       </div>
     </div>
@@ -337,23 +337,23 @@
           <span class="t-dot t-yellow"></span>
           <span class="t-dot t-green"></span>
         </div>
-        <span class="terminal-title">sharedos@kernel: ~ (bash / A2A bus)</span>
+        <span class="terminal-title">omnix@kernel: ~ (bash / A2A bus)</span>
       </div>
       <div class="terminal-body" id="terminal-body">
         <div class="terminal-output" id="terminal-output">
           <div class="terminal-line banner">
-   ____  __                         __  ____  _____
-  / __/ / /  ___ _  _______ ___ __ / / / / / / ___/
- _\ \  / _ \/ _ `/ / __/ -_) _ `/ / /_/ / / /\ \  
-/___/ /_//_/\_,_/ /_/  \__/\_,_/  \____/_/ /___/  
+  ___  __  __ _  __ _____  __
+ / _ \/  \/  / |/ //  _/ |/ /
+/ // / // // /    /_/ //    / 
+\___/_//_//_/_/|_/___/_/|_/   
 ==================================================
-SharedOS Kernel v1.4.2 [Online]
+omnIX Kernel v1.4.2 [Online]
 Type 'help' to view available commands.
 ==================================================
           </div>
         </div>
         <div class="terminal-input-row">
-          <span class="terminal-prompt">sharedos@kernel:~$</span>
+          <span class="terminal-prompt">omnix@kernel:~$</span>
           <input type="text" id="terminal-input" autofocus autocomplete="off" spellcheck="false" />
         </div>
       </div>
@@ -396,7 +396,7 @@ Type 'help' to view available commands.
       </label>
       <div class="modal-actions">
         <button type="button" class="btn btn--ghost" onclick="closeRegisterAgentModal()">Cancel</button>
-        <button type="submit" class="btn btn--primary">Register to SharedOS</button>
+        <button type="submit" class="btn btn--primary">Register to omnIX</button>
       </div>
     </form>
   </div>
@@ -421,7 +421,7 @@ Type 'help' to view available commands.
 
 <footer class="footer">
   <div class="wrap footer__inner">
-    <span>SharedOS — Decentralized Agent Operating System & Ledgerhand Settlement Protocol.</span>
+    <span>omnIX — Decentralized Agent Operating System & Ledgerhand Settlement Protocol.</span>
     <span>Persistent SQLite Storage: <code>ledgerhand.db</code></span>
   </div>
 </footer>

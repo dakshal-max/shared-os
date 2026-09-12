@@ -144,7 +144,7 @@ function seedStandardAgents(db) {
       rate: 45,
       status: "online",
       public_key: "ed25519:9f8e21a4b6c3789012d45e67f89012ab",
-      endpoint: "sharedos://agents/agent-orchestrator-1",
+      endpoint: "omnix://agents/agent-orchestrator-1",
       avatar_color: "#4C8B67",
     },
     {
@@ -156,7 +156,7 @@ function seedStandardAgents(db) {
       rate: 25,
       status: "online",
       public_key: "ed25519:3b7a81c2d9e456789012f345a67890cd",
-      endpoint: "sharedos://agents/agent-cleaner-9",
+      endpoint: "omnix://agents/agent-cleaner-9",
       avatar_color: "#3B82F6",
     },
     {
@@ -168,7 +168,7 @@ function seedStandardAgents(db) {
       rate: 50,
       status: "online",
       public_key: "ed25519:1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
-      endpoint: "sharedos://agents/agent-sentinel-0",
+      endpoint: "omnix://agents/agent-sentinel-0",
       avatar_color: "#B75239",
     },
     {
@@ -180,7 +180,7 @@ function seedStandardAgents(db) {
       rate: 35,
       status: "idle",
       public_key: "ed25519:7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b",
-      endpoint: "sharedos://agents/agent-analyst-3",
+      endpoint: "omnix://agents/agent-analyst-3",
       avatar_color: "#8B5CF6",
     },
     {
@@ -192,7 +192,7 @@ function seedStandardAgents(db) {
       rate: 60,
       status: "online",
       public_key: "ed25519:5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f",
-      endpoint: "sharedos://agents/agent-coder-x",
+      endpoint: "omnix://agents/agent-coder-x",
       avatar_color: "#EC4899",
     },
   ];

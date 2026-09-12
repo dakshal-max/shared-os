@@ -29,7 +29,7 @@ app.get("/api/system/stats", (_req, res) => {
       .reduce((sum, e) => sum + ((e.resolution && e.resolution.amountPaid) || 0), 0);
 
     res.json({
-      kernel: "SharedOS v1.4.2-kernel",
+      kernel: "omnIX v1.4.2-kernel",
       status: "ONLINE",
       uptimeSeconds: Math.floor(process.uptime()),
       tvl: Math.round(tvl * 100) / 100,
@@ -183,5 +183,5 @@ app.get("/api/reputation/:agentId", (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`SharedOS node listening on http://localhost:${PORT}`);
+  console.log(`omnIX node listening on http://localhost:${PORT}`);
 });

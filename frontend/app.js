@@ -1,4 +1,4 @@
-// SharedOS Client Application
+// omnIX Client Application
 const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => document.querySelectorAll(sel);
 
@@ -148,7 +148,7 @@ function renderAgents(agents) {
           </div>
           <span class="status-pill ${statusClass(a.status)}">${a.status}</span>
         </div>
-        <p class="agent-card__desc">${a.description || 'Autonomous agent on the SharedOS network.'}</p>
+        <p class="agent-card__desc">${a.description || 'Autonomous agent on the omnIX network.'}</p>
         <div class="agent-caps">
           ${(a.capabilities || []).map((c) => `<span class="cap-tag">${c}</span>`).join("")}
         </div>
@@ -357,7 +357,7 @@ function renderTasks(tasks) {
   if (!tbody) return;
 
   if (!tasksList.length) {
-    tbody.innerHTML = `<tr><td colspan="7" class="ledger-card__empty">No active processes on SharedOS task queue.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="7" class="ledger-card__empty">No active processes on omnIX task queue.</td></tr>`;
     return;
   }
 
@@ -519,7 +519,7 @@ $("#register-agent-form")?.addEventListener("submit", async (e) => {
       }),
     });
     closeRegisterAgentModal();
-    showToast(`AgentCard for '${newAgent.name}' registered to SharedOS!`);
+    showToast(`AgentCard for '${newAgent.name}' registered to omnIX!`);
     refreshAll();
     switchTab("agents");
   } catch (err) {
@@ -583,12 +583,12 @@ async function handleTerminalCommand(cmdStr) {
   terminalHistory.push(raw);
   historyIndex = terminalHistory.length;
 
-  printTerminal(`sharedos@kernel:~$ ${raw}`, "cmd-echo");
+  printTerminal(`omnix@kernel:~$ ${raw}`, "cmd-echo");
   const [cmd, ...args] = raw.split(/\s+/);
 
   switch (cmd.toLowerCase()) {
     case "help":
-      printTerminal(`Available SharedOS commands:
+      printTerminal(`Available omnIX commands:
   help                           Show this command reference
   sysinfo                        Display OS kernel health, TVL, and uptime
   agent ls                       List all registered agents
@@ -604,7 +604,7 @@ async function handleTerminalCommand(cmdStr) {
     case "sysinfo":
       try {
         const stats = await api("/system/stats");
-        printTerminal(`SharedOS Kernel Information:
+        printTerminal(`omnIX Kernel Information:
   Kernel:        ${stats.kernel}
   Status:        ${stats.status}
   Uptime:        ${stats.uptimeSeconds} seconds
@@ -713,7 +713,7 @@ async function handleTerminalCommand(cmdStr) {
       break;
 
     default:
-      printTerminal(`sh-os: command not found: ${cmd}. Type 'help' for command list.`, "cmd-err");
+      printTerminal(`omnix: command not found: ${cmd}. Type 'help' for command list.`, "cmd-err");
   }
 }
 
@@ -765,7 +765,7 @@ async function refreshAll() {
       if (active) renderActiveEscrow(active);
     }
   } catch (err) {
-    console.error("SharedOS refresh error:", err);
+    console.error("omnIX refresh error:", err);
   }
 }
 

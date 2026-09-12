@@ -13,7 +13,7 @@ const agents = require("../agents");
 const tasks = require("../tasks");
 const store = require("../store");
 
-console.log("Starting SharedOS Test Suite...\n");
+console.log("Starting omnIX Test Suite...\n");
 
 function runTests() {
   // Test 1: Seeded standard agents
@@ -87,7 +87,7 @@ function runTests() {
   assert.ok(tvl >= 0);
   assert.ok(allAgents.length >= 6);
 
-  console.log("\nAll SharedOS tests passed successfully!");
+  console.log("\nAll omnIX tests passed successfully!");
 }
 
 try {

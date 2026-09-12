@@ -27,7 +27,7 @@ const SCENARIOS = [
     payeeId: "agent-analyst-3",
     amount: 40,
     spec: { requiredFields: ["summary", "risk_score", "report_url"] },
-    successOutput: { summary: "Sharpe ratio 2.1; beta 0.85", risk_score: 18, report_url: "https://reports.sharedos/q3.pdf" },
+    successOutput: { summary: "Sharpe ratio 2.1; beta 0.85", risk_score: 18, report_url: "https://reports.omnix/q3.pdf" },
     partialOutput: { summary: "Preliminary risk estimates..." },
   },
   {
@@ -82,7 +82,7 @@ function createTask({
     });
 
     const initialLogs = [
-      { at: now, level: "INFO", message: `Task initialized on SharedOS process bus.` },
+      { at: now, level: "INFO", message: `Task initialized on omnIX process bus.` },
       { at: now, level: "INFO", message: `Escrow ${escrow.id} opened: \$${amt} locked.` },
       { at: now, level: "INFO", message: `Payee ${payeeAgentId} notified via endpoint.` },
     ];

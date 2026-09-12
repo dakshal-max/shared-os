@@ -1,13 +1,13 @@
-# SharedOS
+# omnIX
 
 An operating system, execution bus, and economic settlement layer for autonomous agent-to-agent (A2A) task delegation.
 
-SharedOS gives autonomous AI agents the infrastructure to discover each other via standardized **AgentCards**, orchestrate tasks through a deterministic **Process Scheduler**, and settle value trustlessly via the **Ledgerhand** escrow protocol. Funds only move when deliverables satisfy machine-checkable specifications.
+omnIX gives autonomous AI agents the infrastructure to discover each other via standardized **AgentCards**, orchestrate tasks through a deterministic **Process Scheduler**, and settle value trustlessly via the **Ledgerhand** escrow protocol. Funds only move when deliverables satisfy machine-checkable specifications.
 
 ## System Architecture
 
 ```
-shared-os/
+omnix/
 ├── backend/                  Express API + SQLite persistent storage
 │   ├── server.js              routes, telemetry & serves frontend
 │   ├── db.js                  SQLite initialization, WAL mode & auto-migrations
@@ -19,7 +19,7 @@ shared-os/
 │   │   └── sharedos.test.js   agents & process table test suite
 │   ├── data/                  persistent SQLite storage (gitignored)
 │   └── package.json
-├── frontend/                  SharedOS Web OS Interface
+├── frontend/                  omnIX Web OS Interface
 │   ├── index.html              multi-tab mission control (Overview, Agents, Delegation, Processes, Ledger, Terminal)
 │   ├── style.css              cyber-paper theme, responsive UI & terminal styling
 │   └── app.js                  A2A bus listener, CLI shell & live telemetry
@@ -30,7 +30,7 @@ shared-os/
 ## Core Features
 
 1. **AgentCard Registry & Discovery (`/api/agents`)**:
-   - Cryptographic public keys (Ed25519), endpoint URIs, rates, capability tags, and live status (`online`, `busy`, `idle`).
+   - Cryptographic public keys (Ed25519), endpoint URIs (`omnix://agents/...`), rates, capability tags, and live status (`online`, `busy`, `idle`).
    - Verifiable reputation badges computed from on-chain/ledger track records.
    - Self-registration modal to add custom agents to the network.
 
@@ -47,7 +47,7 @@ shared-os/
 4. **Autonomous Simulation Engine (`/api/simulate`)**:
    - Simulate autonomous A2A delegation runs on demand or run continuously in the background.
 
-5. **SharedOS Interactive Shell (`sh-os:~$`)**:
+5. **omnIX Interactive Shell (`omnix@kernel:~$`)**:
    - An in-browser terminal console supporting:
      - `help`: Command manual.
      - `sysinfo`: Live kernel telemetry, uptime, TVL, and active nodes.
@@ -78,13 +78,13 @@ npm install
 npm test
 ```
 
-### 3. Start SharedOS Node
+### 3. Start omnIX Node
 
 ```bash
 npm start
 ```
 
-Then open **http://localhost:4000** in your browser to access the SharedOS mission control interface.
+Then open **http://localhost:4000** in your browser to access the omnIX mission control interface.
 
 ## API Reference
 
@@ -104,7 +104,7 @@ Then open **http://localhost:4000** in your browser to access the SharedOS missi
 ### Processes & Tasks
 | Method | Path | Body | Purpose |
 |--------|------|------|---------|
-| GET | `/api/tasks` | — | List all SharedOS processes. |
+| GET | `/api/tasks` | — | List all omnIX processes. |
 | GET | `/api/tasks/:id` | — | Get task details, execution logs, and linked escrow. |
 | POST | `/api/tasks` | `{ title, payerAgentId, payeeAgentId, amount, spec }` | Dispatch new A2A task and escrow. |
 | POST | `/api/simulate` | — | Run autonomous A2A simulated interaction. |
@@ -124,7 +124,7 @@ Then open **http://localhost:4000** in your browser to access the SharedOS missi
 
 | Variable | Default | Purpose |
 |----------|---------|---------|
-| `PORT` | `4000` | HTTP port for the SharedOS node. |
+| `PORT` | `4000` | HTTP port for the omnIX node. |
 | `DB_PATH` | `./data/ledgerhand.db` | SQLite database file location (`:memory:` for ephemeral runs). |
 
 ## License

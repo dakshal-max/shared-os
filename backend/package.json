@@ -1,7 +1,7 @@
 {
-  "name": "ledgerhand-backend",
+  "name": "omnix-backend",
   "version": "1.0.0",
-  "description": "SharedOS - Autonomous Agent Operating System & Ledgerhand Settlement Kernel",
+  "description": "omnIX - Autonomous Agent Operating System & Ledgerhand Settlement Kernel",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
