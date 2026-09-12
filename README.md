@@ -1,95 +1,132 @@
-# Ledgerhand
+# SharedOS
 
-An escrow + reputation microservice for agent-to-agent (A2A) task delegation on SharedOS.
-One agent pays into escrow, the other delivers work against a machine-checkable spec, and
-funds only move once the spec is satisfied — with every outcome logged to a portable
-reputation record either agent can carry into its next transaction.
+An operating system, execution bus, and economic settlement layer for autonomous agent-to-agent (A2A) task delegation.
 
-## What's in here
+SharedOS gives autonomous AI agents the infrastructure to discover each other via standardized **AgentCards**, orchestrate tasks through a deterministic **Process Scheduler**, and settle value trustlessly via the **Ledgerhand** escrow protocol. Funds only move when deliverables satisfy machine-checkable specifications.
+
+## System Architecture
 
 ```
-ledgerhand/
+shared-os/
 ├── backend/                  Express API + SQLite persistent storage
-│   ├── server.js              routes, and serves the frontend as static files
-│   ├── db.js                  SQLite initialization, WAL mode & migrations
-│   ├── store.js               database-backed escrow lifecycle, spec-check, arbiter & reputation
+│   ├── server.js              routes, telemetry & serves frontend
+│   ├── db.js                  SQLite initialization, WAL mode & auto-migrations
+│   ├── agents.js              AgentCard registry & dynamic trust scoring
+│   ├── tasks.js               process table, A2A delegation & simulation engine
+│   ├── store.js               Ledgerhand escrow lifecycle, spec-check & arbiter
 │   ├── test/
-│   │   └── store.test.js      automated database test suite
-│   ├── data/                  default directory for SQLite database (gitignored)
+│   │   ├── store.test.js      escrow settlement test suite
+│   │   └── sharedos.test.js   agents & process table test suite
+│   ├── data/                  persistent SQLite storage (gitignored)
 │   └── package.json
-├── frontend/                  Static site (vanilla HTML/CSS/JS, no build step)
-│   ├── index.html              landing page + interactive demo + live tables
-│   ├── style.css
-│   └── app.js                  talks to the real backend over fetch()
+├── frontend/                  SharedOS Web OS Interface
+│   ├── index.html              multi-tab mission control (Overview, Agents, Delegation, Processes, Ledger, Terminal)
+│   ├── style.css              cyber-paper theme, responsive UI & terminal styling
+│   └── app.js                  A2A bus listener, CLI shell & live telemetry
 ├── .gitignore
 └── README.md
 ```
 
-There's no separate frontend server — Express serves the static frontend files
-directly, so one process runs the whole thing.
+## Core Features
 
-## Database & Persistence
+1. **AgentCard Registry & Discovery (`/api/agents`)**:
+   - Cryptographic public keys (Ed25519), endpoint URIs, rates, capability tags, and live status (`online`, `busy`, `idle`).
+   - Verifiable reputation badges computed from on-chain/ledger track records.
+   - Self-registration modal to add custom agents to the network.
 
-Ledgerhand includes a persistent relational **SQLite** database (`backend/data/ledgerhand.db`) with:
-- **Zero-setup**: Uses native Node.js built-in `node:sqlite` (Node >= 22.5.0) with fallback to `better-sqlite3`. No external database servers or daemons required.
-- **WAL Mode**: Enabled for high-concurrency read/write transactions.
-- **Relational Tables**:
-  - `escrows`: Tracks ID, payer, payee, amount, spec, status, output, resolution, and timestamps.
-  - `escrow_events`: Immutable audit trail for all escrow events (`escrow_opened`, `output_submitted`, `funds_released`, `check_failed`, `dispute_raised`, `dispute_resolved`).
-  - `reputations`: Aggregated counters (`completed`, `disputed`, `refunded`) and computed reputation scores per agent.
+2. **A2A Delegation Studio & Ledgerhand Settlement (`/api/escrow`)**:
+   - Lock bounties in escrow with machine-checkable specifications.
+   - Automatic settlement when deliverable keys match the spec.
+   - Rules-based arbiter for proportional partial payouts or full refunds upon dispute.
+   - Built-in task presets (Data Hygiene, Code Synthesis, Financial Analysis, Contract Invariant Audit).
 
-### Environment Configuration
+3. **Process Scheduler & Live Task Bus (`/api/tasks`)**:
+   - Full process manager tracking task IDs (`proc_xxxx`), progress (0-100%), and immutable execution logs.
+   - Linkages between dispatched tasks and underlying escrow agreements.
 
-| Variable | Default | Purpose |
-|----------|---------|---------|
-| `PORT` | `4000` | HTTP port for the Express API server. |
-| `DB_PATH` | `./data/ledgerhand.db` | Path to the SQLite database file (`:memory:` can be used for ephemeral testing). |
+4. **Autonomous Simulation Engine (`/api/simulate`)**:
+   - Simulate autonomous A2A delegation runs on demand or run continuously in the background.
 
-## Run it
+5. **SharedOS Interactive Shell (`sh-os:~$`)**:
+   - An in-browser terminal console supporting:
+     - `help`: Command manual.
+     - `sysinfo`: Live kernel telemetry, uptime, TVL, and active nodes.
+     - `agent ls` / `agent info <id>` / `agent register <name> <role>`: Agent directory management.
+     - `escrow ls` / `escrow open <payer> <payee> <amount> [fields]`: Escrow operations.
+     - `task ls`: View running and completed processes.
+     - `simulate`: Dispatch an autonomous task across the bus.
+     - `clear`: Clear screen.
+
+6. **Persistent SQLite Database (`backend/data/ledgerhand.db`)**:
+   - Native Node.js built-in `node:sqlite` (Node >= 22.5.0) with zero external compilation dependencies.
+   - Fallback to `better-sqlite3` for older Node environments.
+   - High-throughput WAL mode (`PRAGMA journal_mode = WAL;`) and ACID transaction management.
+   - Relational tables: `agents`, `tasks`, `escrows`, `escrow_events`, `reputations`.
+
+## Getting Started
+
+### 1. Installation
 
 ```bash
 cd backend
 npm install
-npm start
 ```
 
-Then open **http://localhost:4000** in a browser. The demo form on that page opens
-real escrows against the persistent API — submit an output, dispute an outcome,
-and watch the ledger and reputation tables update live with data persisted across server restarts.
-
-## Run tests
+### 2. Run Tests
 
 ```bash
-cd backend
 npm test
 ```
 
-## API reference
+### 3. Start SharedOS Node
 
-| Method | Path                        | Body                                                  | Purpose                                      |
-|--------|-----------------------------|--------------------------------------------------------|-----------------------------------------------|
-| POST   | `/api/escrow`               | `{ payerId, payeeId, amount, spec: { requiredFields }, taskDescription }` | Open a new escrow, locking the payment.       |
-| GET    | `/api/escrow`               | —                                                        | List all escrows, newest first.               |
-| GET    | `/api/escrow/:id`           | —                                                        | Get one escrow's full state and history.      |
-| POST   | `/api/escrow/:id/submit`    | `{ output: { ...fields } }`                              | Payee submits work; auto-checked against spec.|
-| POST   | `/api/escrow/:id/dispute`   | `{ reason }`                                             | Escalate to the rules-based arbiter.          |
-| GET    | `/api/reputation`           | —                                                        | Leaderboard of every agent's track record.     |
-| GET    | `/api/reputation/:agentId`  | —                                                        | One agent's completed/disputed/refunded + score.|
+```bash
+npm start
+```
 
-## How settlement works
+Then open **http://localhost:4000** in your browser to access the SharedOS mission control interface.
 
-1. **Held** — payer opens an escrow with an amount and a spec (list of required output fields).
-2. **Submit** — payee posts output. If every required field is present, funds **release** immediately.
-   If some are missing, the escrow moves to `failed_check` and waits for a dispute.
-3. **Dispute** — a lightweight rules-based arbiter re-checks the output:
-   - all required fields matched → already released, nothing to arbitrate
-   - some fields matched → **partial release**, proportional to the match
-   - no fields matched (or no spec was attached at all) → **full refund**
+## API Reference
 
-## Notes for going further
+### System Telemetry
+| Method | Path | Purpose |
+|--------|------|---------|
+| GET | `/api/system/stats` | Returns TVL, settled volume, active agents, kernel uptime, and total processes. |
 
-- Add auth (signed requests per AgentCard) before this touches real funds.
-- The spec check here is a flat "are these keys present" test — for production, validate
-  against a real JSON Schema per task type.
-- Reputation is currently per-process; wire it to `AgentCard` extensions so it's portable
-  across every agent on SharedOS, not just this demo instance.
+### Agents
+| Method | Path | Body | Purpose |
+|--------|------|------|---------|
+| GET | `/api/agents` | — | List all registered agents with reputation scores. |
+| GET | `/api/agents/:id` | — | Inspect single AgentCard and recent escrow history. |
+| POST | `/api/agents` | `{ id, name, role, description, capabilities, rate }` | Register a new agent card. |
+| PUT | `/api/agents/:id/status` | `{ status: "online" \| "busy" \| "idle" }` | Update agent runtime state. |
+
+### Processes & Tasks
+| Method | Path | Body | Purpose |
+|--------|------|------|---------|
+| GET | `/api/tasks` | — | List all SharedOS processes. |
+| GET | `/api/tasks/:id` | — | Get task details, execution logs, and linked escrow. |
+| POST | `/api/tasks` | `{ title, payerAgentId, payeeAgentId, amount, spec }` | Dispatch new A2A task and escrow. |
+| POST | `/api/simulate` | — | Run autonomous A2A simulated interaction. |
+
+### Ledgerhand Settlement & Escrow
+| Method | Path | Body | Purpose |
+|--------|------|------|---------|
+| POST | `/api/escrow` | `{ payerId, payeeId, amount, spec, taskDescription }` | Open escrow and lock bounty. |
+| GET | `/api/escrow` | — | List all escrows. |
+| GET | `/api/escrow/:id` | — | Inspect escrow state and immutable audit log. |
+| POST | `/api/escrow/:id/submit` | `{ output: { ...fields } }` | Submit deliverable; auto-checks spec. |
+| POST | `/api/escrow/:id/dispute` | `{ reason }` | Escalate to deterministic arbiter. |
+| GET | `/api/reputation` | — | Agent reputation leaderboard. |
+| GET | `/api/reputation/:agentId` | — | Single agent reputation metrics. |
+
+## Environment Configuration
+
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `PORT` | `4000` | HTTP port for the SharedOS node. |
+| `DB_PATH` | `./data/ledgerhand.db` | SQLite database file location (`:memory:` for ephemeral runs). |
+
+## License
+
+MIT

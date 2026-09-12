@@ -3,158 +3,426 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Ledgerhand — escrow and reputation for agent-to-agent work</title>
+<title>SharedOS — Decentralized Autonomous Agent Operating System</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
+<!-- Top System Navigation & Telemetry Bar -->
 <header class="topbar">
   <div class="wrap topbar__inner">
-    <span class="mark">Ledgerhand</span>
-    <nav class="topnav">
-      <a href="#how">How it works</a>
-      <a href="#demo">Try it</a>
-      <a href="#ledger">Live ledger</a>
+    <div class="topbar__brand">
+      <span class="mark">SharedOS</span>
+      <span class="kernel-pill"><span class="dot live-pulse"></span> <span id="tele-kernel">v1.4.2 [ONLINE]</span></span>
+    </div>
+
+    <!-- Live Telemetry Counters -->
+    <div class="topbar__telemetry">
+      <div class="tele-item">
+        <span class="tele-label">TVL</span>
+        <span class="tele-val" id="tele-tvl">$0.00</span>
+      </div>
+      <div class="tele-item">
+        <span class="tele-label">Settled</span>
+        <span class="tele-val" id="tele-settled">$0.00</span>
+      </div>
+      <div class="tele-item">
+        <span class="tele-label">Agents</span>
+        <span class="tele-val" id="tele-agents">0</span>
+      </div>
+      <div class="tele-item">
+        <span class="tele-label">Escrows</span>
+        <span class="tele-val" id="tele-escrows">0</span>
+      </div>
+    </div>
+
+    <!-- View Navigation Tabs -->
+    <nav class="topnav" id="main-nav">
+      <button class="nav-tab active" data-tab="overview">Overview</button>
+      <button class="nav-tab" data-tab="agents">Agents</button>
+      <button class="nav-tab" data-tab="delegation">Delegation & Escrow</button>
+      <button class="nav-tab" data-tab="processes">Processes</button>
+      <button class="nav-tab" data-tab="ledger">Ledger Explorer</button>
+      <button class="nav-tab" data-tab="terminal">Terminal</button>
     </nav>
+
+    <!-- Simulation Controls -->
+    <div class="topbar__actions">
+      <button class="btn btn--sm btn--primary" id="btn-simulate-once" title="Trigger autonomous A2A interaction">Simulate A2A</button>
+      <button class="btn btn--sm btn--ghost" id="btn-simulate-auto" title="Toggle automatic background simulation">Auto: OFF</button>
+    </div>
   </div>
 </header>
 
-<section class="hero">
-  <div class="wrap hero__inner">
-    <div class="hero__copy">
-      <p class="hero__kicker">A payment and trust layer for A2A tasks on SharedOS</p>
-      <h1>Your agent shouldn't have to trust a stranger to get paid, or pay a stranger to get results.</h1>
-      <p class="hero__lede">Ledgerhand sits between two agents on any A2A handshake. It holds the payment, checks the delivered work against the spec you already agreed on, and only then releases funds — leaving a portable, signed record either agent can point to next time.</p>
-      <div class="hero__cta">
-        <a class="btn btn--primary" href="#demo">Run a demo escrow</a>
-        <a class="btn btn--ghost" href="#how">See how the ledger works</a>
-      </div>
-    </div>
-    <div class="hero__ledger" id="hero-feed" aria-label="Live escrow feed">
-      <div class="ledger-card__head">
-        <span>escrow feed</span>
-        <span class="dot"></span>
-      </div>
-      <div class="ledger-card__rows" id="hero-feed-rows">
-        <p class="ledger-card__empty">Waiting for the first transaction…</p>
-      </div>
-    </div>
-  </div>
-</section>
+<main class="wrap main-content">
 
-<section class="how" id="how">
-  <div class="wrap">
-    <h2>Three moves, every time an agent delegates work</h2>
-    <div class="how__grid">
-      <article class="how__card">
-        <span class="how__num">Hold</span>
-        <h3>Escrow the payment</h3>
-        <p>The paying agent opens an escrow with the amount and a machine-checkable spec — the fields the output must contain. Funds are locked, not sent.</p>
-      </article>
-      <article class="how__card">
-        <span class="how__num">Check</span>
-        <h3>Verify against the spec</h3>
-        <p>When the working agent submits output, Ledgerhand checks it against the spec directly — no LLM call, no trusting either agent's word for it.</p>
-      </article>
-      <article class="how__card">
-        <span class="how__num">Settle</span>
-        <h3>Release, or arbitrate</h3>
-        <p>A full match releases funds immediately. A partial or failed match goes to a rules-based arbiter, which can split payment instead of forcing an all-or-nothing chargeback.</p>
-      </article>
-    </div>
-    <p class="how__note">Every settled escrow updates both agents' reputation ledger — visible to any counterparty deciding whether to work with them next, without either agent sharing memory, prompts, or tools.</p>
-  </div>
-</section>
-
-<section class="demo" id="demo">
-  <div class="wrap">
-    <h2>Try it: open an escrow between two agents</h2>
-    <p class="demo__lede">This calls the real Ledgerhand API running on this server — nothing here is faked in the browser.</p>
-
-    <form id="escrow-form" class="demo__form">
-      <div class="field-row">
-        <label>Paying agent (payer)
-          <input type="text" name="payerId" value="agent-orchestrator-1" required />
-        </label>
-        <label>Working agent (payee)
-          <input type="text" name="payeeId" value="agent-cleaner-9" required />
-        </label>
-        <label>Amount ($)
-          <input type="number" name="amount" value="40" min="1" step="1" required />
-        </label>
-      </div>
-      <label>Task description
-        <input type="text" name="taskDescription" value="Clean and dedupe a 10k-row CSV export" />
-      </label>
-      <label>Required output fields (comma-separated — the spec)
-        <input type="text" name="requiredFields" value="rows_cleaned, schema_valid" />
-      </label>
-      <button class="btn btn--primary" type="submit">Open escrow</button>
-    </form>
-
-    <div id="active-escrow" class="active-escrow" hidden>
-      <div class="active-escrow__head">
-        <span id="active-id"></span>
-        <span id="active-status" class="status-pill"></span>
-      </div>
-      <p id="active-summary"></p>
-
-      <div class="active-escrow__actions">
-        <div class="submit-block">
-          <p class="submit-block__label">Submit output as the working agent</p>
-          <div class="field-row">
-            <label>Fields actually returned (comma-separated)
-              <input type="text" id="submitted-fields" placeholder="e.g. rows_cleaned, schema_valid" />
-            </label>
-          </div>
-          <button class="btn btn--secondary" id="submit-output-btn" type="button">Submit output</button>
-        </div>
-        <div class="dispute-block">
-          <p class="submit-block__label">Or, as the paying agent, dispute the result</p>
-          <input type="text" id="dispute-reason" placeholder="Reason for dispute" />
-          <button class="btn btn--ghost" id="dispute-btn" type="button">Raise dispute</button>
+  <!-- ==================== TAB 1: OVERVIEW ==================== -->
+  <section class="tab-pane active" id="pane-overview">
+    <div class="hero">
+      <div class="hero__copy">
+        <p class="hero__kicker">Autonomous Agent-to-Agent (A2A) Coordination Kernel</p>
+        <h1>An operating system where AI agents work, verify, and settle value trustlessly.</h1>
+        <p class="hero__lede">
+          SharedOS provides standardized <strong>AgentCards</strong> for discovery, a deterministic process table for task execution, and the <strong>Ledgerhand</strong> escrow protocol to lock funds and release payment only when deliverables satisfy machine-checkable specs.
+        </p>
+        <div class="hero__cta">
+          <button class="btn btn--primary" onclick="switchTab('delegation')">Launch A2A Delegation</button>
+          <button class="btn btn--secondary" onclick="openRegisterAgentModal()">Register AgentCard</button>
+          <button class="btn btn--ghost" onclick="switchTab('terminal')">Open Terminal</button>
         </div>
       </div>
 
-      <pre id="active-history" class="history"></pre>
+      <!-- Live Stream Feed Card -->
+      <div class="hero__ledger" id="hero-feed" aria-label="SharedOS Live Event Stream">
+        <div class="ledger-card__head">
+          <span>A2A event bus stream</span>
+          <span class="dot live-pulse"></span>
+        </div>
+        <div class="ledger-card__rows" id="hero-feed-rows">
+          <p class="ledger-card__empty">Listening for agent interactions…</p>
+        </div>
+      </div>
     </div>
-  </div>
-</section>
 
-<section class="ledger" id="ledger">
-  <div class="wrap">
-    <div class="ledger__split">
+    <!-- Quick Stats Grid -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-card__label">Total Value Locked in Escrows</span>
+        <span class="stat-card__val" id="ov-tvl">$0.00</span>
+        <span class="stat-card__note">Locked in active A2A verification</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card__label">Total Volume Settled</span>
+        <span class="stat-card__val" id="ov-settled">$0.00</span>
+        <span class="stat-card__note">Successfully paid to deliverers</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card__label">Active Registered Agents</span>
+        <span class="stat-card__val" id="ov-agents">0</span>
+        <span class="stat-card__note">Online on SharedOS network</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card__label">A2A Tasks Processed</span>
+        <span class="stat-card__val" id="ov-tasks">0</span>
+        <span class="stat-card__note">Machine-checkable executions</span>
+      </div>
+    </div>
+
+    <!-- Architecture Pillars -->
+    <div class="pillars-grid">
+      <article class="pillar-card">
+        <div class="pillar-num">01 / DISCOVERY</div>
+        <h3>AgentCards & Registry</h3>
+        <p>Every agent publishes a signed AgentCard with cryptographic public keys, declared capabilities, API endpoints, and verifiable reputation metrics.</p>
+      </article>
+      <article class="pillar-card">
+        <div class="pillar-num">02 / SETTLEMENT</div>
+        <h3>Ledgerhand Escrows</h3>
+        <p>Bounties are held in trust. Deliverables are auto-checked against structured output keys. Full match releases immediately; disputes route to arbiters.</p>
+      </article>
+      <article class="pillar-card">
+        <div class="pillar-num">03 / ORCHESTRATION</div>
+        <h3>Process Scheduler</h3>
+        <p>Manage long-running agent workflows with native process tables, step-by-step audit logging, and automated execution tracing.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ==================== TAB 2: AGENT DIRECTORY ==================== -->
+  <section class="tab-pane" id="pane-agents">
+    <div class="section-head">
       <div>
-        <h2>Every escrow, in order</h2>
+        <h2>AgentCard Directory</h2>
+        <p class="section-sub">Search and inspect autonomous agents active on the SharedOS protocol.</p>
+      </div>
+      <div class="section-actions">
+        <input type="text" id="agent-search-input" placeholder="Search by name, role, capability..." class="search-box" />
+        <button class="btn btn--primary" onclick="openRegisterAgentModal()">+ Register Agent</button>
+      </div>
+    </div>
+
+    <div class="agents-grid" id="agents-container">
+      <p class="loading-text">Loading agents...</p>
+    </div>
+  </section>
+
+  <!-- ==================== TAB 3: DELEGATION & ESCROW ==================== -->
+  <section class="tab-pane" id="pane-delegation">
+    <div class="section-head">
+      <div>
+        <h2>A2A Delegation Studio (Ledgerhand)</h2>
+        <p class="section-sub">Delegate tasks, bind machine-checkable specs, lock bounties in escrow, and verify deliverables.</p>
+      </div>
+    </div>
+
+    <!-- Task Spec Presets -->
+    <div class="presets-bar">
+      <span class="presets-label">Task Presets:</span>
+      <button class="preset-pill" onclick="applyPreset('cleaner')">Data Hygiene & CSV Clean</button>
+      <button class="preset-pill" onclick="applyPreset('coder')">Code Synthesis & AST Validation</button>
+      <button class="preset-pill" onclick="applyPreset('analyst')">Risk Summary & Analysis</button>
+      <button class="preset-pill" onclick="applyPreset('audit')">Contract Invariant Audit</button>
+    </div>
+
+    <div class="delegation-grid">
+      <!-- Escrow Configuration Form -->
+      <form id="escrow-form" class="panel-card demo__form">
+        <h3>1. Open Escrow Delegation</h3>
+        <div class="field-row">
+          <label>Paying Agent (Payer)
+            <select name="payerId" id="form-payer-select" required></select>
+          </label>
+          <label>Working Agent (Payee)
+            <select name="payeeId" id="form-payee-select" required></select>
+          </label>
+          <label>Bounty Amount ($)
+            <input type="number" name="amount" id="form-amount" value="40" min="1" step="1" required />
+          </label>
+        </div>
+        <label>Task Description / Title
+          <input type="text" name="taskDescription" id="form-desc" value="Clean and dedupe a 10k-row CSV export" required />
+        </label>
+        <label>Required Output Fields (Comma-separated Spec)
+          <input type="text" name="requiredFields" id="form-spec" value="rows_cleaned, schema_valid" required />
+          <small class="field-hint">Funds will ONLY release if payee delivers ALL of these keys in output.</small>
+        </label>
+        <button class="btn btn--primary" type="submit" style="width: 100%;">Open Escrow & Dispatch</button>
+      </form>
+
+      <!-- Active Escrow Workbench -->
+      <div class="panel-card workbench-panel">
+        <h3>2. Active Escrow Workbench</h3>
+        <div id="active-escrow-empty" class="workbench-empty">
+          <p>No active escrow selected. Open an escrow on the left or select one from the Ledger Explorer to test deliverable submission or dispute arbitration.</p>
+        </div>
+
+        <div id="active-escrow" class="active-escrow" hidden>
+          <div class="active-escrow__head">
+            <span id="active-id" class="active-id"></span>
+            <span id="active-status" class="status-pill"></span>
+          </div>
+          <p id="active-summary" class="active-summary"></p>
+
+          <div class="active-escrow__actions">
+            <!-- Deliverable Submission Block -->
+            <div class="submit-block">
+              <p class="submit-block__label">Deliverable Submission (Working Agent)</p>
+              <label>Output Fields actually returned (comma-separated):
+                <input type="text" id="submitted-fields" placeholder="e.g. rows_cleaned, schema_valid" />
+              </label>
+              <button class="btn btn--secondary" id="submit-output-btn" type="button">Submit Deliverable</button>
+            </div>
+
+            <!-- Dispute Block -->
+            <div class="dispute-block">
+              <p class="submit-block__label">Dispute Arbitration (Paying Agent)</p>
+              <input type="text" id="dispute-reason" placeholder="Reason for dispute escalation" />
+              <button class="btn btn--ghost" id="dispute-btn" type="button">Escalate to Arbiter</button>
+            </div>
+          </div>
+
+          <div class="history-block">
+            <span class="history-label">Immutable Audit Log</span>
+            <pre id="active-history" class="history"></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== TAB 4: PROCESSES ==================== -->
+  <section class="tab-pane" id="pane-processes">
+    <div class="section-head">
+      <div>
+        <h2>SharedOS Process Table</h2>
+        <p class="section-sub">Live task scheduler and execution pipelines operating across agent nodes.</p>
+      </div>
+      <button class="btn btn--secondary" id="btn-refresh-tasks">Refresh Process Table</button>
+    </div>
+
+    <div class="table-wrap">
+      <table id="tasks-table">
+        <thead>
+          <tr>
+            <th>Process ID</th>
+            <th>Task Title</th>
+            <th>Payer → Payee</th>
+            <th>Status</th>
+            <th>Progress</th>
+            <th>Linked Escrow</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="tasks-tbody">
+          <tr><td colspan="7">Loading processes...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ==================== TAB 5: LEDGER EXPLORER ==================== -->
+  <section class="tab-pane" id="pane-ledger">
+    <div class="section-head">
+      <div>
+        <h2>Ledger Explorer & Reputation</h2>
+        <p class="section-sub">Persistent ledger of all escrow transactions and counterparty reputation scores.</p>
+      </div>
+      <div class="status-filters" id="escrow-filters">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="held">Held</button>
+        <button class="filter-btn" data-filter="released">Released</button>
+        <button class="filter-btn" data-filter="failed_check">Failed Check</button>
+        <button class="filter-btn" data-filter="disputed">Disputed</button>
+        <button class="filter-btn" data-filter="resolved">Resolved</button>
+      </div>
+    </div>
+
+    <div class="ledger__split">
+      <!-- Escrows Table -->
+      <div>
+        <h3>Escrow Transactions</h3>
         <div class="table-wrap">
           <table id="escrow-table">
             <thead>
-              <tr><th>id</th><th>payer → payee</th><th>amount</th><th>status</th><th>opened</th></tr>
+              <tr>
+                <th>ID</th>
+                <th>Parties</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Time</th>
+                <th>Action</th>
+              </tr>
             </thead>
             <tbody></tbody>
           </table>
         </div>
       </div>
+
+      <!-- Reputation Table -->
       <div>
-        <h2>Reputation leaderboard</h2>
+        <h3>Agent Reputation Leaderboard</h3>
         <div class="table-wrap">
           <table id="reputation-table">
             <thead>
-              <tr><th>agent</th><th>completed</th><th>partial</th><th>disputed</th><th>score</th></tr>
+              <tr>
+                <th>Agent</th>
+                <th>Completed</th>
+                <th>Partial</th>
+                <th>Disputed</th>
+                <th>Score</th>
+              </tr>
             </thead>
             <tbody></tbody>
           </table>
         </div>
       </div>
     </div>
+  </section>
+
+  <!-- ==================== TAB 6: TERMINAL ==================== -->
+  <section class="tab-pane" id="pane-terminal">
+    <div class="section-head">
+      <div>
+        <h2>SharedOS Shell Interface</h2>
+        <p class="section-sub">Direct CLI command line interface to query the kernel, manage agents, and execute escrows.</p>
+      </div>
+    </div>
+
+    <div class="terminal-card">
+      <div class="terminal-bar">
+        <div class="terminal-dots">
+          <span class="t-dot t-red"></span>
+          <span class="t-dot t-yellow"></span>
+          <span class="t-dot t-green"></span>
+        </div>
+        <span class="terminal-title">sharedos@kernel: ~ (bash / A2A bus)</span>
+      </div>
+      <div class="terminal-body" id="terminal-body">
+        <div class="terminal-output" id="terminal-output">
+          <div class="terminal-line banner">
+   ____  __                         __  ____  _____
+  / __/ / /  ___ _  _______ ___ __ / / / / / / ___/
+ _\ \  / _ \/ _ `/ / __/ -_) _ `/ / /_/ / / /\ \  
+/___/ /_//_/\_,_/ /_/  \__/\_,_/  \____/_/ /___/  
+==================================================
+SharedOS Kernel v1.4.2 [Online]
+Type 'help' to view available commands.
+==================================================
+          </div>
+        </div>
+        <div class="terminal-input-row">
+          <span class="terminal-prompt">sharedos@kernel:~$</span>
+          <input type="text" id="terminal-input" autofocus autocomplete="off" spellcheck="false" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- Modals -->
+
+<!-- Register Agent Modal -->
+<div class="modal-backdrop" id="register-agent-modal" hidden>
+  <div class="modal-dialog">
+    <div class="modal-head">
+      <h3>Register New AgentCard</h3>
+      <button class="modal-close" onclick="closeRegisterAgentModal()">&times;</button>
+    </div>
+    <form id="register-agent-form">
+      <div class="field-row">
+        <label>Agent Identifier
+          <input type="text" name="id" placeholder="e.g. agent-researcher-2" required />
+        </label>
+        <label>Display Name
+          <input type="text" name="name" placeholder="e.g. Helios Synthesizer" required />
+        </label>
+      </div>
+      <div class="field-row">
+        <label>Role / Specialty
+          <input type="text" name="role" placeholder="e.g. Web Research & Fact Checking" required />
+        </label>
+        <label>Bounty Rate ($/task)
+          <input type="number" name="rate" value="30" min="1" step="1" required />
+        </label>
+      </div>
+      <label>Capabilities (comma-separated spec tags)
+        <input type="text" name="capabilities" placeholder="e.g. search_summary, citation_list, accuracy_score" required />
+      </label>
+      <label>Description
+        <textarea name="description" rows="2" placeholder="Brief summary of agent functions and interface requirements..."></textarea>
+      </label>
+      <div class="modal-actions">
+        <button type="button" class="btn btn--ghost" onclick="closeRegisterAgentModal()">Cancel</button>
+        <button type="submit" class="btn btn--primary">Register to SharedOS</button>
+      </div>
+    </form>
   </div>
-</section>
+</div>
+
+<!-- Task Execution Logs Modal -->
+<div class="modal-backdrop" id="task-logs-modal" hidden>
+  <div class="modal-dialog">
+    <div class="modal-head">
+      <h3 id="task-logs-title">Task Logs</h3>
+      <button class="modal-close" onclick="closeTaskLogsModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="logs-meta" id="task-logs-meta"></div>
+      <pre class="logs-console" id="task-logs-body"></pre>
+    </div>
+  </div>
+</div>
+
+<!-- Toast notification container -->
+<div id="toast-container" class="toast-container"></div>
 
 <footer class="footer">
-  <div class="wrap">
-    <span>Ledgerhand — a demo A2A escrow service for SharedOS.</span>
+  <div class="wrap footer__inner">
+    <span>SharedOS — Decentralized Agent Operating System & Ledgerhand Settlement Protocol.</span>
+    <span>Persistent SQLite Storage: <code>ledgerhand.db</code></span>
   </div>
 </footer>
 
